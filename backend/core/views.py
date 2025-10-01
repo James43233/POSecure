@@ -4,6 +4,11 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, viewsets
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework import generics, permissions
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.parsers import MultiPartParser, FormParser
+
 from django.contrib.auth.hashers import check_password
 from .models import UserEmployee, Product, Brand, Category, Supplier, Supply, SupplyDetails, Condition, EmailDevice
 from .serializers import (
@@ -97,6 +102,33 @@ class TwoFAVerifyView(APIView):
         else:
             return Response({'error': 'Invalid or expired verification code.'}, status=status.HTTP_401_UNAUTHORIZED)
         
+class UserProfileView(generics.RetrieveAPIView):
+    serializer_class = UserEmployeeSerializer
+    permission_classes = [permissions.IsAuthenticated]  # safer than AllowAny
+    queryset = UserEmployee.objects.all()
+    lookup_field = "user_id"
+
+class CurrentUserProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        serializer = UserEmployeeSerializer(request.user)
+        return Response(serializer.data)
+    
+class UploadProfilePictureView(APIView):
+    permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
+
+    def post(self, request):
+        file = request.FILES.get("profile_picture")
+        if not file:
+            return Response({"error": "No file uploaded"}, status=400)
+        request.user.profile_picture = file
+        request.user.save(update_fields=["profile_picture"])
+        return Response({"message": "Profile picture updated"})
+
+        
+
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all().order_by('-product_id')
     # Use different serializer for list/retrieve (joined), and for create/update (normal)

@@ -126,7 +126,7 @@ class RoleType(models.Model):
         
 class UserEmployee(AbstractBaseUser, PermissionsMixin):
     user_id = models.AutoField(primary_key=True)
-    User_name = models.CharField(max_length=255)
+    user_name = models.CharField(max_length=255)
     username = models.CharField(max_length=150, unique=True)
     password = models.CharField(max_length=128)
     email = models.EmailField(max_length=255, null=True, blank=True)
@@ -137,12 +137,14 @@ class UserEmployee(AbstractBaseUser, PermissionsMixin):
         choices=[('email', 'Email'), ('phone', 'Phone')],
         default='email'
     )
-    role = models.ForeignKey(RoleType, on_delete=models.SET_NULL, null=True, db_column='Role_ID')
+    role = models.ForeignKey(RoleType, on_delete=models.SET_NULL, null=True, db_column='role_id')
     is_superuser = models.BooleanField(default=False)
     last_login = models.DateTimeField(null=True, blank=True)
+    profile_picture = models.ImageField(upload_to="profile_pics/", null=True, blank=True)
 
     USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['User_name', 'email']
+    REQUIRED_FIELDS = ['user_name', 'email']
+
 
     objects = UserEmployeeManager()
 

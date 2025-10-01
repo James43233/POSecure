@@ -1,31 +1,26 @@
 from rest_framework import serializers
+from rest_framework import generics, permissions
 from .models import UserEmployee, Product, Brand, Category, Supplier, Supply, SupplyDetails, Condition, RoleType, Sale, RoleType
 
-
 class UserEmployeeSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)
-    role_id = serializers.PrimaryKeyRelatedField(
-        queryset=RoleType.objects.all(),
-        source='role',
-        write_only=True
-    )
-    role = serializers.StringRelatedField(read_only=True)
-    role_Id = serializers.IntegerField(source='role.role_id', read_only=True)  
+    role_id = serializers.IntegerField(source="role.role_id", read_only=True)
+    role_name = serializers.CharField(source="role.name", read_only=True)  # 👈 safe
 
     class Meta:
         model = UserEmployee
         fields = [
-            'user_id', 'User_name', 'username', 'password', 'email',
-            'mobile_phone', 'role_id', 'role', 'role_Id'
+            "user_id",
+            "user_name",
+            "username",
+            "email",
+            "mobile_phone",
+            "role_id",
+            "role_name",        # 👈 now valid because we defined it above
+            "profile_picture",
         ]
-        read_only_fields = ['user_id', 'role', 'role_Id']
 
-    def create(self, validated_data):
-        password = validated_data.pop('password')
-        user = UserEmployee(**validated_data)
-        user.set_password(password)
-        user.save()
-        return user
+        
+
         
 class BrandSerializer(serializers.ModelSerializer):
     class Meta:

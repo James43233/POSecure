@@ -14,7 +14,7 @@ function Header() {
   return (
     <div className='w-full h-[120px] bg-red-500 text-white top-0 flex flex-row justify-evenly items-center px-8'>
       <div className='font-mono font-bold text-xl w-full flex justify-center '>
-        MISFITS COMPANY DATABASE
+        TOYOZU COMPANY DATABASE
       </div>
       <div className='flex gap-6 text-white font-mono w-full items-center justify-center '>
         <Link to="/Inventory" className="hover:underline">Inventory</Link>
@@ -22,6 +22,9 @@ function Header() {
         {(roleId === "2" || roleId === "3") && (
           <Link to="/Dashboard" className="hover:underline">Dashboard</Link>
         )}
+        <Link to="/Start" className="hover:underline">Start</Link>
+        <Link to="/Index" className="hover:underline">Index</Link>
+        <Link to="/LoginPage" className="hover:underline">Login Page</Link>
         
       </div>
       <div className="w-full  flex justify-end items-center">

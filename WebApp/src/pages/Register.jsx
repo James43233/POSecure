@@ -1,173 +1,225 @@
-import '../App.css';
-import Header from '../Header.jsx';
-import { useState } from 'react';
+"use client"
+
+import React, { useState } from "react"
+import { useNavigate } from "react-router-dom"
+import logo from "../assets/Arrival.png"
 
 function Register() {
+  const [showPassword, setShowPassword] = useState(false)
+  const navigate = useNavigate()
+
   // Form state
   const [form, setForm] = useState({
-    fullname: '',
-    username: '',
-    password: '',
-    email: '',
-    phone: '',
-    role_id: '',
-  });
-
-  // For demonstration: list of roles (should be fetched from your backend in production)
-  const roles = [
-    { id: 1, name: "Admin" },
-    { id: 2, name: "Secretary" },
-    { id: 3, name: "Employee" },
-  ];
+    fullname: "",
+    username: "",
+    password: "",
+    email: "",
+    phone: "",
+  })
 
   // Handle input change
-  const handleChange = e => {
+  const handleChange = (e) => {
     setForm({
       ...form,
       [e.target.name]: e.target.value,
-    });
-  };
+    })
+  }
 
-  // Handle submit - you should connect this to your backend API
+  // Handle register
   const handleSubmit = async (e) => {
-        e.preventDefault();
+    e.preventDefault()
 
-        // Create formData or plain object as needed by backend
-        const data = {
-            User_name: form.fullname,
-            username: form.username,
-            password: form.password,
-            email: form.email,
-            mobile_phone: form.phone,
-            role_id: form.role_id,
-        };
+    // Always assign role_id = 4 for regular users
+    const data = {
+      user_name: form.fullname,
+      username: form.username,
+      password: form.password,
+      email: form.email,
+      mobile_phone: form.phone,
+      role_id: 4, 
+    }
 
-        try {
-            const response = await fetch('http://localhost:8000/api/register/', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data),
-            });
+    try {
+      const response = await fetch("http://localhost:8000/api/register/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      })
 
-            const text = await response.text(); // Get raw response for debugging
+      const text = await response.text()
+      let json
+      try {
+        json = JSON.parse(text)
+      } catch {
+        json = null
+      }
 
-            // Try to parse JSON if any
-            let json;
-            try {
-            json = JSON.parse(text);
-            } catch {
-            json = null;
-            }
-
-            if (response.ok) {
-            alert('Registration successful: ' + text);
-            } else {
-            alert('Registration failed: ' + (json ? JSON.stringify(json) : text));
-            }
-        } catch (error) {
-            alert('An error occurred: ' + error);
-        }
-    };
+      if (response.ok) {
+        alert("Registration successful: " + text)
+        navigate("/login")
+      } else {
+        alert("Registration failed: " + (json ? JSON.stringify(json) : text))
+      }
+    } catch (error) {
+      alert("An error occurred: " + error)
+    }
+  }
 
   return (
-    <>
-      <Header />
-      <div className="w-[1400px] mx-auto bg-white h-[1100px] flex flex-col p-8">
-        <div className="w-[500px] flex justify-center mx-auto flex-col items-center">
-          <div className="mt-[20px]">
-            <span className="font-mono text-2xl">Register an Employee</span>
+    <div className="min-h-screen bg-gradient-to-br from-red-100 via-white to-red-100 flex flex-col items-center justify-center p-4 relative overflow-hidden">
+      <div className="w-full max-w-md relative z-10 ">
+        <div className="bg-card w-full shadow-2xl border border-gray-300 backdrop-blur-sm rounded-xl">
+          {/* Header */}
+          <div className="text-center pb-8">
+            <div className="mt-[20px] mb-6">
+              <h1 className="text-4xl font-bold text-primary mb-2 tracking-tight text-[#eb0505]">
+                <img src={logo} alt="Logo" className="h-[55px] inline-block mr-2" />
+                TOYOZU
+              </h1>
+              <div className="w-16 h-1 bg-gradient-to-r from-primary to-accent mx-auto rounded-full"></div>
+            </div>
+            <div className="text-2xl font-semibold text-foreground">Create Account</div>
+            <div className="text-muted-foreground">Register as a new user</div>
           </div>
-          <form onSubmit={handleSubmit} className="flex justify-center items-center flex-col">
-            <div className='flex flex-col mt-[20px] '>
-              <label className='text-lg text-justify mb-[5px] font-mono'>Full Name</label>
-              <input
-                type="text"
-                id="fullname"
-                name="fullname"
-                value={form.fullname}
-                onChange={handleChange}
-                className='w-[200px] h-[35px] bg-white border-[1px] text-black'
-                required
-              />
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Full Name */}
+            <div className="space-y-2">
+              <label htmlFor="fullname" className="ml-[20px] text-foreground font-medium">
+                Full Name
+              </label>
+              <div className="w-[400px] mx-auto">
+                <input
+                  id="fullname"
+                  name="fullname"
+                  type="text"
+                  placeholder="Enter full name"
+                  value={form.fullname}
+                  onChange={handleChange}
+                  className="w-full h-12 px-3 border border-black rounded-sm"
+                  required
+                />
+              </div>
             </div>
-            <div className='flex flex-col mt-[20px]'>
-              <label className='text-lg text-justify mb-[5px] font-mono'>Username</label>
-              <input
-                type="text"
-                id="username"
-                name="username"
-                value={form.username}
-                onChange={handleChange}
-                className='w-[200px] h-[35px] bg-white border-[1px] text-black'
-                required
-              />
+
+            {/* Username */}
+            <div className="space-y-2">
+              <label htmlFor="username" className="ml-[20px] text-foreground font-medium">
+                Username
+              </label>
+              <div className="w-[400px] mx-auto">
+                <input
+                  id="username"
+                  name="username"
+                  type="text"
+                  placeholder="Enter username"
+                  value={form.username}
+                  onChange={handleChange}
+                  className="w-full h-12 px-3 border border-black rounded-sm"
+                  required
+                />
+              </div>
             </div>
-            <div className='flex flex-col mt-[20px]'>
-              <label className='text-lg text-justify mb-[5px] font-mono'>Password</label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                value={form.password}
-                onChange={handleChange}
-                className='w-[200px] h-[35px] bg-white border-[1px] text-black'
-                required
-              />
+
+            {/* Password */}
+            <div className="space-y-2">
+              <label htmlFor="password" className="ml-[20px] text-foreground font-medium">
+                Password
+              </label>
+              <div className="relative w-[400px] mx-auto">
+                <input
+                  id="password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Enter password"
+                  value={form.password}
+                  onChange={handleChange}
+                  className="w-full h-12 px-3 pr-20 border border-black rounded-sm"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500 hover:text-black"
+                  tabIndex={-1}
+                >
+                  {showPassword ? "Hide" : "Show"}
+                </button>
+              </div>
             </div>
-            <div className='flex flex-col mt-[20px]'>
-              <label className='text-lg text-justify mb-[5px] font-mono'>Email</label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={form.email}
-                onChange={handleChange}
-                className='w-[200px] h-[35px] bg-white border-[1px] text-black'
-                required
-              />
+
+            {/* Email */}
+            <div className="space-y-2">
+              <label htmlFor="email" className="ml-[20px] text-foreground font-medium">
+                Email
+              </label>
+              <div className="w-[400px] mx-auto">
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  placeholder="Enter email"
+                  value={form.email}
+                  onChange={handleChange}
+                  className="w-full h-12 px-3 border border-black rounded-sm"
+                  required
+                />
+              </div>
             </div>
-            <div className='flex flex-col mt-[20px]'>
-              <label className='text-lg text-justify mb-[5px] font-mono'>Phone </label>
-              <input
-                type="tel"
-                id="phone"
-                name="phone"
-                value={form.phone}
-                onChange={handleChange}
-                className='w-[200px] h-[35px] bg-white border-[1px] text-black'
-                required
-              />
+
+            {/* Phone */}
+            <div className="space-y-2">
+              <label htmlFor="phone" className="ml-[20px] text-foreground font-medium">
+                Phone
+              </label>
+              <div className="w-[400px] mx-auto">
+                <input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  placeholder="Enter phone number"
+                  value={form.phone}
+                  onChange={handleChange}
+                  className="w-full h-12 px-3 border border-black rounded-sm"
+                  required
+                />
+              </div>
             </div>
-            <div className='flex flex-col mt-[20px]'>
-              <label className='text-lg text-justify mb-[5px] font-mono'>Role</label>
-              <select
-                id="role_id"
-                name="role_id"
-                value={form.role_id}
-                onChange={handleChange}
-                className='w-[200px] h-[35px] bg-white border-[1px] text-black'
-                required
+
+            {/* Submit Button */}
+            <div className="flex justify-center">
+              <button
+                type="submit"
+                className="w-[400px] flex justify-center items-center h-12 bg-[#eb0505] text-white font-semibold shadow-lg transition hover:shadow-xl hover:scale-105 rounded-sm"
               >
-                <option value="" disabled>Select a role</option>
-                {roles.map(role => (
-                  <option key={role.id} value={role.id}>
-                    {role.name}
-                  </option>
-                ))}
-              </select>
+                Register
+              </button>
             </div>
-            
-            <button
-              type="submit"
-              className='w-[200px] p-3 bg-white border-[1px] text-black mt-[20px]'
-            >
-              Enter
-            </button>
           </form>
+
+          {/* Footer */}
+          <div className="mt-8 text-center mb-8">
+            <p className="text-muted-foreground">
+              Already have an account?{" "}
+              <a
+                href="/login"
+                className="text-primary hover:text-accent font-medium transition-colors"
+              >
+                Sign in here
+              </a>
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-8 text-center">
+          <p className="text-muted-foreground text-sm">
+            © 2024 Toyozu. All rights reserved.
+          </p>
         </div>
       </div>
-    </>
-  );
+    </div>
+  )
 }
 
 export default Register;

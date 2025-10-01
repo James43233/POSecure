@@ -2,12 +2,16 @@ from django.urls import path, include
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework import routers
 from .views import (
+    CurrentUserProfileView,
     LoginView,
     ProductViewSet, BrandViewSet, CategoryViewSet,
     SupplierViewSet, SupplyViewSet, SupplyDetailsViewSet, ConditionViewSet,
     ProductAdminDeleteView, TwoFAVerifyView, RegisterEmployeeView, LowStockProductsView, TopSellingProductsView, RecentTransactionsView,
-    AvailableProductsStatsView
+    AvailableProductsStatsView,
+    UploadProfilePictureView, UserProfileView
 )
+
+
 
 router = routers.DefaultRouter()
 router.register(r'products', ProductViewSet)
@@ -28,4 +32,10 @@ urlpatterns = [
     path('api/top-selling-products/', TopSellingProductsView.as_view()),
     path('api/recent-transactions/', RecentTransactionsView.as_view()),
     path('api/product-stats/', AvailableProductsStatsView.as_view()),
+    path('api/profile/me/', CurrentUserProfileView.as_view(), name='current-user-profile'),
+    path("api/profile/upload/", UploadProfilePictureView.as_view(), name="profile-upload"),
 ]
+
+
+
+
